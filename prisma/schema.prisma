@@ -20,16 +20,18 @@ model User {
 }
 
 model Athlete {
-  id          Int      @id @default(autoincrement())
-  name        String
-  surname     String
-  secondName  String?  @map("second_name")
-  birthDate   DateTime @map("birth_date")
-  region      String
-  type        String?
-  avatar      String?  @map("avatar_url")
-  passport    String?  @map("passport_url")
-  certificate String?  @map("certificate_url")
+  id           Int           @id @default(autoincrement())
+  name         String
+  surname      String
+  secondName   String?       @map("second_name")
+  birthDate    DateTime      @map("birth_date")
+  region       String
+  rank         String
+  type         String?
+  avatar       String?       @map("avatar_url")
+  passport     String?       @map("passport_url")
+  certificate  String?       @map("certificate_url")
+  competitions Competition[]
 
   @@map("athletes")
 }
@@ -40,6 +42,8 @@ model Competition {
   startDate  DateTime @map("start_date")
   finishDate DateTime @map("finish_date")
   place      String
+  athleteId  Int?      @map("athlete_id")
+  athlete    Athlete?  @relation(fields: [athleteId], references: [id])
 
   @@map("competitions")
 }

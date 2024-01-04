@@ -21,32 +21,31 @@ export class UserController {
 	constructor(private readonly userService: UserService) {}
 
 	@Post()
-	@Auth()
+	@Auth('admin')
 	async create(@Body() dto: UserDto) {
 		return this.userService.create(dto)
 	}
-
 	@Get()
-	@Auth()
+	@Auth('admin')
 	async getAll() {
 		return this.userService.getAll()
 	}
 
 	@Get(':id')
-	@Auth()
+	@Auth('admin')
 	async getById(@Param('id') id: number) {
 		return this.userService.getById(id)
 	}
 
 	@Patch(':id')
-	@Auth()
+	@Auth('admin')
 	@UsePipes(new ValidationPipe())
 	async update(@Param('id') id: number, @Body() dto: UserDto) {
 		return this.userService.update(id, dto)
 	}
 
 	@Delete(':id')
-	@Auth()
+	@Auth('admin')
 	async delete(@Param('id') id: number) {
 		await this.userService.getById(id)
 		await this.userService.delete(id)

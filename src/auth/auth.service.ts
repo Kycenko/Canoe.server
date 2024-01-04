@@ -5,11 +5,11 @@ import {
 	UnauthorizedException
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
+import { User } from '@prisma/client'
 import { PrismaService } from '@prisma/prisma.service'
+import { hash, verify } from 'argon2'
 import { AuthDto } from './dto/auth.dto'
 import { RegisterDto } from './dto/register.dto'
-import { hash, verify } from 'argon2'
-import { User } from '@prisma/client'
 
 @Injectable()
 export class AuthService {
@@ -50,8 +50,6 @@ export class AuthService {
 		if (oldUser)
 			throw new BadRequestException(EXCEPTIONS.USER_ALREADY_EXISTS_EXCEPTION)
 
-		if (dto.password !== dto.confirmPassword)
-			throw new BadRequestException(EXCEPTIONS.PASSWORDS_DONT_MATCH_EXCEPTION)
 		const user = await this.prisma.user.create({
 			data: {
 				login: dto.login,
@@ -82,7 +80,8 @@ export class AuthService {
 		return {
 			id: user.id,
 			login: user.login,
-			isAdmin: user.isAdmin
+			isAdmin: user.isAdmin,
+			region: user.region
 		}
 	}
 

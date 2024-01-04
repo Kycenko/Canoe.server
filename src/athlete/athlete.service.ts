@@ -1,15 +1,8 @@
-import {
-	Injectable,
-	NotFoundException,
-	UploadedFile,
-	UseInterceptors
-} from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { PrismaService } from './../../prisma/prisma.service'
 
 import { Athlete } from '@prisma/client'
 import { AthleteDto } from './dto/athlete.dto'
-import { FileInterceptor } from '@nestjs/platform-express'
-import { diskStorage } from 'multer'
 
 @Injectable()
 export class AthleteService {
@@ -19,9 +12,73 @@ export class AthleteService {
 		return await this.prisma.athlete.create({ data: dto })
 	}
 
-	async getAll(): Promise<Athlete[]> {
-		return await this.prisma.athlete.findMany()
+	async getAll(
+		page?: number,
+		limit?: number,
+		region?: string,
+		isAdmin?: boolean
+	): Promise<Athlete[]> {
+		let skip = page && page > 1 ? (page - 1) * limit : 0
+		if (isAdmin) {
+			return await this.prisma.athlete.findMany({
+				skip: skip,
+				take: +limit
+			})
+		} else if (page && limit) {
+			return await this.prisma.athlete.findMany({
+				where: {
+					region: region
+				},
+				skip: skip,
+				take: +limit
+			})
+		} else {
+			return await this.prisma.athlete.findMany({
+				where: {
+					region: region
+				}
+			})
+		}
 	}
+	// async getAll(
+	// 	page?: number,
+	// 	limit?: number,
+	// 	region?: string,
+	// 	isAdmin?: boolean
+	// ): Promise<{ data: Athlete[]; total: number }> {
+	// 	let athletes
+	// 	let total
+
+	// 	if (isAdmin) {
+	// 		athletes = await this.prisma.athlete.findMany({
+	// 			skip: (page - 1) * limit,
+	// 			take: +limit
+	// 		})
+	// 		total = await this.prisma.athlete.count()
+	// 	} else if (page && limit) {
+	// 		athletes = await this.prisma.athlete.findMany({
+	// 			where: {
+	// 				region: region
+	// 			},
+	// 			skip: (page - 1) * limit,
+	// 			take: +limit
+	// 		})
+	// 		total = await this.prisma.athlete.count()
+	// 	} else {
+	// 		athletes = await this.prisma.athlete.findMany({
+	// 			where: {
+	// 				region: region
+	// 			}
+	// 		})
+	// 		total = await this.prisma.athlete.count({
+	// 			where: {
+	// 				region: region
+	// 			}
+	// 		})
+	// 	}
+
+	// 	return { data: athletes, total: total }
+	// }
 
 	async getById(id: number): Promise<Athlete> {
 		const athlete = await this.prisma.athlete.findUnique({ where: { id: +id } })
@@ -36,8 +93,20 @@ export class AthleteService {
 
 	async delete(id: number) {
 		await this.getById(id)
-
 		await this.prisma.athlete.delete({ where: { id: +id } })
+	}
+
+	async getAthleteImages(
+		id: number
+	): Promise<{ avatar: string; passport: string; certificate: string }> {
+		const athlete = await this.prisma.athlete.findUnique({ where: { id: +id } })
+		if (!athlete) throw new NotFoundException(EXCEPTIONS.NOT_FOUND_EXCEPTION)
+
+		return {
+			avatar: athlete.avatar,
+			passport: athlete.passport,
+			certificate: athlete.certificate
+		}
 	}
 
 	// @UseInterceptors(

@@ -6,6 +6,7 @@ import {
 	Param,
 	Patch,
 	Post,
+	Query,
 	UsePipes,
 	ValidationPipe
 } from '@nestjs/common'
@@ -20,7 +21,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 export class CompetitionController {
 	constructor(private readonly competitionService: CompetitionService) {}
 
-	@Post('/create-competition')
+	@Post('/add')
 	@Auth()
 	async create(@Body() dto: CompetitionDto) {
 		return this.competitionService.create(dto)
@@ -28,8 +29,8 @@ export class CompetitionController {
 
 	@Get()
 	@Auth()
-	async getAll() {
-		return this.competitionService.getAll()
+	async getAll(@Query('page') page?: number, @Query('limit') limit?: number) {
+		return this.competitionService.getAll(page, limit)
 	}
 
 	@Get(':id')
@@ -38,7 +39,7 @@ export class CompetitionController {
 		return this.competitionService.getById(id)
 	}
 
-	@Patch('/update-competition/:id')
+	@Patch('/edit/:id')
 	@Auth()
 	@UsePipes(new ValidationPipe())
 	async update(@Param('id') id: number, @Body() dto: CompetitionDto) {

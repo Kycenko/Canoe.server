@@ -11,8 +11,15 @@ export class CompetitionService {
 		return await this.prisma.competition.create({ data: dto })
 	}
 
-	async getAll(): Promise<Competition[]> {
-		return await this.prisma.competition.findMany()
+	async getAll(page?: number, limit?: number): Promise<Competition[]> {
+		if (page && limit) {
+			return await this.prisma.competition.findMany({
+				skip: (page - 1) * limit,
+				take: +limit
+			})
+		} else {
+			return await this.prisma.competition.findMany()
+		}
 	}
 
 	async getById(id: number): Promise<Competition> {

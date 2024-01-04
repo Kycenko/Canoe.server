@@ -1,4 +1,4 @@
-import { IsString, IsDate, IsOptional, IsNotEmpty } from 'class-validator'
+import { IsString, IsOptional, IsNotEmpty } from 'class-validator'
 import { ApiProperty } from '@nestjs/swagger'
 
 export class AthleteDto {
@@ -14,17 +14,22 @@ export class AthleteDto {
 
 	@ApiProperty()
 	@IsString()
-	@IsNotEmpty({ message: 'Обязательное поле!' })
 	secondName: string
 
 	@ApiProperty()
-	@IsDate()
-	birthDate: Date
+	@IsString()
+	@IsNotEmpty({ message: 'Обязательное поле!' })
+	birthDate: string
 
 	@ApiProperty()
 	@IsString()
 	@IsNotEmpty({ message: 'Обязательное поле!' })
 	region: string
+
+	@ApiProperty()
+	@IsString()
+	@IsNotEmpty({ message: 'Обязательное поле!' })
+	rank: string
 
 	@ApiProperty()
 	@IsString()

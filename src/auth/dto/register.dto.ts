@@ -1,14 +1,12 @@
+import { ApiProperty } from '@nestjs/swagger'
 import {
 	IsBoolean,
 	IsNotEmpty,
 	IsOptional,
 	IsString,
 	MaxLength,
-	MinLength,
-	isString
+	MinLength
 } from 'class-validator'
-import { IsEqualTo } from '@utils/constraints/isEqualsTo'
-import { ApiProperty } from '@nestjs/swagger'
 
 export class RegisterDto {
 	@ApiProperty()
@@ -24,12 +22,6 @@ export class RegisterDto {
 	@MinLength(6, { message: 'Минимум 6 символов!' })
 	@MaxLength(20, { message: 'Максимум 20 символов!' })
 	password: string
-
-	@ApiProperty()
-	@IsString()
-	@IsNotEmpty({ message: 'Обязательное поле!' })
-	@IsEqualTo('password', { message: 'Пароли должны совпадать!' })
-	confirmPassword: string
 
 	@ApiProperty()
 	@IsBoolean()
